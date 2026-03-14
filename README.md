@@ -43,11 +43,11 @@
 
 | Metric | Formula | Unit | Notes |
 |--------|---------|------|-------|
-| **#Parameters ($W$)** | Sum of all weight tensor elements (see [layer table](#layer-by-layer-formulas)) | count | Bias typically ignored in estimates |
+| **\#Parameters ($W$)** | Sum of all weight tensor elements (see [layer table](#layer-by-layer-formulas)) | count | Bias typically ignored in estimates |
 | **Model Size** | $W \times b$ | bits (convert to MB/GB) | Storage cost of weights on disk/flash |
-| **#Activations (Total)** | $\sum_{\text{all layers}} \text{output activation elements}$ | count | Sum across all feature maps |
-| **Peak #Activations** | $\approx \text{Input Activation} + \text{Output Activation}$ (bottleneck layer) | count | **Often the memory bottleneck** in inference |
-| **Activation Memory** | $\text{\#Activations} \times b$ | bits → bytes | SRAM/GPU memory consumed |
+| **\#Activations (Total)** | $\sum_{\text{all layers}} \text{output activation elements}$ | count | Sum across all feature maps |
+| **Peak \#Activations** | $\approx \text{Input Activation} + \text{Output Activation}$ (bottleneck layer) | count | **Often the memory bottleneck** in inference |
+| **Activation Memory** | $\#\text{Activations} \times b$ | bits → bytes | SRAM/GPU memory consumed |
 | **KV Cache (LLMs)** | $BS \times L \times \text{Heads} \times d_{head} \times N \times 2 \times b$ | bits → bytes | Stores K & V for autoregressive decoding |
 
 ### Key Insight
@@ -146,7 +146,7 @@ $$
 
 *Bias ignored. Batch size $n = 1$.*
 
-| Layer Type | #Parameters | MACs |
+| Layer Type | \#Parameters | MACs |
 |:-----------|:------------|:-----|
 | **Fully-Connected (Linear)** | $c_o \cdot c_i$ | $c_o \cdot c_i$ |
 | **Standard Convolution** | $c_o \cdot c_i \cdot k_h \cdot k_w$ | $c_o \cdot c_i \cdot k_h \cdot k_w \cdot h_o \cdot w_o$ |
@@ -172,9 +172,9 @@ $$
 
 | Metric | What It Measures | Formula |
 |--------|-----------------|---------|
-| **Peak #Activations** | Max memory at any single point (HW constraint) | $\max_{\text{layer } l}\left(\text{Input}_l + \text{Output}_l\right)$ |
-| **Total #Activations** | Sum of all feature maps across all layers | $\sum_{\text{all layers}} \text{Output}_l$ |
-| **Activation Memory** | Byte cost of activations | $\text{\#Activations} \times b / 8$ bytes |
+| **Peak \#Activations** | Max memory at any single point (HW constraint) | $\max_{\text{layer } l}\left(\text{Input}_l + \text{Output}_l\right)$ |
+| **Total \#Activations** | Sum of all feature maps across all layers | $\sum_{\text{all layers}} \text{Output}_l$ |
+| **Activation Memory** | Byte cost of activations | $\#\text{Activations} \times b / 8$ bytes |
 
 ### Training Memory Note
 > During **on-device training**, **all** intermediate activations from the forward pass must be stored for backpropagation — making memory $\gg$ inference-only. Sparse backprop can store only ~1/4 of activations.
@@ -297,8 +297,8 @@ $$
 
 | Condition | Regime | Bottleneck |
 |-----------|--------|------------|
-| $\text{Arithmetic Intensity} > \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Memory-bound** | Data movement |
-| $\text{Arithmetic Intensity} < \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Compute-bound** | Arithmetic |
+| $\text{Arithmetic Intensity} \gt \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Memory-bound** | Data movement |
+| $\text{Arithmetic Intensity} \lt \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Compute-bound** | Arithmetic |
 
 > Use the **Roofline Model** to visualize where your workload sits.
 
@@ -330,7 +330,7 @@ $$
 
 | Lever | Reduces | Metric Impact |
 |-------|---------|---------------|
-| **Pruning** | #Parameters, MACs | ↓ Model Size, ↓ FLOPs, ↓ Latency |
+| **Pruning** | \#Parameters, MACs | ↓ Model Size, ↓ FLOPs, ↓ Latency |
 | **Quantization** | Bit Width | ↓ Model Size, ↓ Memory BW, ↑ OPS/W |
 | **Knowledge Distillation** | Model complexity | ↓ Params while preserving accuracy |
 | **Depthwise Separable Conv** | MACs, Params | ↓ FLOPs by ~8-9× vs standard conv |
