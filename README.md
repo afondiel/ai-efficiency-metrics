@@ -43,11 +43,11 @@
 
 | Metric | Formula | Unit | Notes |
 |--------|---------|------|-------|
-| **#Parameters ($W$)** | Sum of all weight tensor elements (see [layer table](#layer-by-layer-formulas)) | count | Bias typically ignored in estimates |
+| **\#Parameters ($W$)** | Sum of all weight tensor elements (see [layer table](#layer-by-layer-formulas)) | count | Bias typically ignored in estimates |
 | **Model Size** | $W \times b$ | bits (convert to MB/GB) | Storage cost of weights on disk/flash |
-| **#Activations (Total)** | $\sum_{\text{all layers}} \text{output activation elements}$ | count | Sum across all feature maps |
-| **Peak #Activations** | $\approx \text{Input Activation} + \text{Output Activation}$ (bottleneck layer) | count | **Often the memory bottleneck** in inference |
-| **Activation Memory** | $\text{\#Activations} \times b$ | bits → bytes | SRAM/GPU memory consumed |
+| **\#Activations (Total)** | $\sum_{\text{all layers}} \text{output activation elements}$ | count | Sum across all feature maps |
+| **Peak \#Activations** | $\approx \text{Input Activation} + \text{Output Activation}$ (bottleneck layer) | count | **Often the memory bottleneck** in inference |
+| **Activation Memory** | $\text{Total Activation} \times b$ | bits → bytes | SRAM/GPU memory consumed |
 | **KV Cache (LLMs)** | $BS \times L \times \text{Heads} \times d_{head} \times N \times 2 \times b$ | bits → bytes | Stores K & V for autoregressive decoding |
 
 ### Key Insight
@@ -74,9 +74,13 @@
 
 ### Transformer FLOPs Heuristic (Decoder-Only)
 
-$$\text{FLOPs per token} \approx 6 \times L \times d^2$$
+$$
+\text{FLOPs per token} \approx 6 \times L \times d^2
+$$
 
-$$\text{Estimated params} \approx V \cdot d + L \times 12 \times d^2$$
+$$
+\text{Estimated params} \approx V \cdot d + L \times 12 \times d^2
+$$
 
 ### Winograd Convolution (3×3)
 
@@ -88,7 +92,9 @@ Reduces cost from $9 \times C \times 4$ MACs → $16 \times C$ MACs for 4 output
 
 ### Latency
 
-$$\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}}\right)}$$
+$$
+\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}}\right)}
+$$
 
 | Component | Formula |
 |-----------|---------|
@@ -99,13 +105,17 @@ $$\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}
 
 ### Throughput
 
-$$\text{Throughput} = \frac{\text{Total Processed Units}}{\text{Total Time (s)}}$$
+$$
+\text{Throughput} = \frac{\text{Total Processed Units}}{\text{Total Time (s)}}
+$$
 
 Or simply: $\text{Throughput} \approx 1 / \text{Latency}$ (for single-stream).
 
 ### Tokens per Second (LLMs)
 
-$$\text{Tokens/s} = \frac{1}{T_{\text{per\_token}}} = \frac{\text{OPS}_{\text{hardware}} \times \text{Utilization}}{\text{FLOPs per token}}$$
+$$
+\text{Tokens/s} = \frac{1}{T_{\text{per-token}}} = \frac{\text{OPS}_{\text{hardware}} \times \text{Utilization}}{\text{FLOPs per token}}
+$$
 
 ---
 
@@ -126,7 +136,9 @@ $$\text{Tokens/s} = \frac{1}{T_{\text{per\_token}}} = \frac{\text{OPS}_{\text{ha
 ### Key Insight
 > **DRAM access ≈ 200× more energy** than a 32-bit arithmetic operation. Minimizing data movement is often more impactful than reducing FLOPs.
 
-$$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory References} \rightarrow \text{More Energy}$$
+$$
+\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory References} \rightarrow \text{More Energy}
+$$
 
 ---
 
@@ -134,7 +146,7 @@ $$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory Refer
 
 *Bias ignored. Batch size $n = 1$.*
 
-| Layer Type | #Parameters | MACs |
+| Layer Type | \#Parameters | MACs |
 |:-----------|:------------|:-----|
 | **Fully-Connected (Linear)** | $c_o \cdot c_i$ | $c_o \cdot c_i$ |
 | **Standard Convolution** | $c_o \cdot c_i \cdot k_h \cdot k_w$ | $c_o \cdot c_i \cdot k_h \cdot k_w \cdot h_o \cdot w_o$ |
@@ -160,9 +172,9 @@ $$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory Refer
 
 | Metric | What It Measures | Formula |
 |--------|-----------------|---------|
-| **Peak #Activations** | Max memory at any single point (HW constraint) | $\max_{\text{layer } l}\left(\text{Input}_l + \text{Output}_l\right)$ |
-| **Total #Activations** | Sum of all feature maps across all layers | $\sum_{\text{all layers}} \text{Output}_l$ |
-| **Activation Memory** | Byte cost of activations | $\text{\#Activations} \times b / 8$ bytes |
+| **Peak \#Activations** | Max memory at any single point (HW constraint) | $\max_{\text{layer } l}\left(\text{Input}_l + \text{Output}_l\right)$ |
+| **Total \#Activations** | Sum of all feature maps across all layers | $\sum_{\text{all layers}} \text{Output}_l$ |
+| **Activation Memory** | Byte cost of activations | $\text{Total Activation} \times b / 8$ bytes |
 
 ### Training Memory Note
 > During **on-device training**, **all** intermediate activations from the forward pass must be stored for backpropagation — making memory $\gg$ inference-only. Sparse backprop can store only ~1/4 of activations.
@@ -183,7 +195,7 @@ $$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory Refer
 
 | Metric | Formula / Details |
 |--------|-------------------|
-| **Initial Token Count** | $\dfrac{H \times W}{\text{Patch\_Size}^2}$ |
+| **Initial Token Count** | $\dfrac{H \times W}{\text{PatchSize}^2}$ |
 | **Attention Cost** | $O(N^2)$ for softmax; $O(N)$ for linear attention |
 
 ### LLMs / Transformers
@@ -279,12 +291,14 @@ Define these before computing Family III & IV metrics:
 
 ## Compute-Bound vs. Memory-Bound Decision
 
-$$\text{Arithmetic Intensity} = \frac{\text{Total OPs}}{\text{Total Bytes Moved}}$$
+$$
+\text{Arithmetic Intensity} = \frac{\text{Total OPs}}{\text{Total Bytes Moved}}
+$$
 
 | Condition | Regime | Bottleneck |
 |-----------|--------|------------|
-| $\text{Arithmetic Intensity} > \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Memory-bound** | Data movement |
-| $\text{Arithmetic Intensity} < \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Compute-bound** | Arithmetic |
+| $\text{Arithmetic Intensity} &gt; \frac{\text{OPS/hw}}{\text{BW/mem}}$ | **Memory-bound** | Data movement |
+| $\text{Arithmetic Intensity} &lt; \frac{\text{OPS/hw}}{\text{BW/mem}}$ | **Compute-bound** | Arithmetic |
 
 > Use the **Roofline Model** to visualize where your workload sits.
 
@@ -316,7 +330,7 @@ $$\text{Arithmetic Intensity} = \frac{\text{Total OPs}}{\text{Total Bytes Moved}
 
 | Lever | Reduces | Metric Impact |
 |-------|---------|---------------|
-| **Pruning** | #Parameters, MACs | ↓ Model Size, ↓ FLOPs, ↓ Latency |
+| **Pruning** | \#Parameters, MACs | ↓ Model Size, ↓ FLOPs, ↓ Latency |
 | **Quantization** | Bit Width | ↓ Model Size, ↓ Memory BW, ↑ OPS/W |
 | **Knowledge Distillation** | Model complexity | ↓ Params while preserving accuracy |
 | **Depthwise Separable Conv** | MACs, Params | ↓ FLOPs by ~8-9× vs standard conv |
