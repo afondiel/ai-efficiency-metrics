@@ -74,9 +74,13 @@
 
 ### Transformer FLOPs Heuristic (Decoder-Only)
 
-$$\text{FLOPs per token} \approx 6 \times L \times d^2$$
+$$
+\text{FLOPs per token} \approx 6 \times L \times d^2
+$$
 
-$$\text{Estimated params} \approx V \cdot d + L \times 12 \times d^2$$
+$$
+\text{Estimated params} \approx V \cdot d + L \times 12 \times d^2
+$$
 
 ### Winograd Convolution (3×3)
 
@@ -88,7 +92,9 @@ Reduces cost from $9 \times C \times 4$ MACs → $16 \times C$ MACs for 4 output
 
 ### Latency
 
-$$\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}}\right)}$$
+$$
+\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}}\right)}
+$$
 
 | Component | Formula |
 |-----------|---------|
@@ -99,13 +105,17 @@ $$\boxed{\text{Latency} \approx \max\left(T_{\text{compute}},\; T_{\text{memory}
 
 ### Throughput
 
-$$\text{Throughput} = \frac{\text{Total Processed Units}}{\text{Total Time (s)}}$$
+$$
+\text{Throughput} = \frac{\text{Total Processed Units}}{\text{Total Time (s)}}
+$$
 
 Or simply: $\text{Throughput} \approx 1 / \text{Latency}$ (for single-stream).
 
 ### Tokens per Second (LLMs)
 
-$$\text{Tokens/s} = \frac{1}{T_{\text{per\_token}}} = \frac{\text{OPS}_{\text{hardware}} \times \text{Utilization}}{\text{FLOPs per token}}$$
+$$
+\text{Tokens/s} = \frac{1}{T_{\text{per-token}}} = \frac{\text{OPS}_{\text{hardware}} \times \text{Utilization}}{\text{FLOPs per token}}
+$$
 
 ---
 
@@ -126,7 +136,9 @@ $$\text{Tokens/s} = \frac{1}{T_{\text{per\_token}}} = \frac{\text{OPS}_{\text{ha
 ### Key Insight
 > **DRAM access ≈ 200× more energy** than a 32-bit arithmetic operation. Minimizing data movement is often more impactful than reducing FLOPs.
 
-$$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory References} \rightarrow \text{More Energy}$$
+$$
+\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory References} \rightarrow \text{More Energy}
+$$
 
 ---
 
@@ -183,7 +195,7 @@ $$\text{Energy} \propto \text{Data Movement} \rightarrow \text{More Memory Refer
 
 | Metric | Formula / Details |
 |--------|-------------------|
-| **Initial Token Count** | $\dfrac{H \times W}{\text{Patch\_Size}^2}$ |
+| **Initial Token Count** | $\dfrac{H \times W}{\text{PatchSize}^2}$ |
 | **Attention Cost** | $O(N^2)$ for softmax; $O(N)$ for linear attention |
 
 ### LLMs / Transformers
@@ -279,7 +291,9 @@ Define these before computing Family III & IV metrics:
 
 ## Compute-Bound vs. Memory-Bound Decision
 
-$$\text{Arithmetic Intensity} = \frac{\text{Total OPs}}{\text{Total Bytes Moved}}$$
+$$
+\text{Arithmetic Intensity} = \frac{\text{Total OPs}}{\text{Total Bytes Moved}}
+$$
 
 | Condition | Regime | Bottleneck |
 |-----------|--------|------------|
