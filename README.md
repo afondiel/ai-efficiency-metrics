@@ -47,7 +47,7 @@
 | **Model Size** | $W \times b$ | bits (convert to MB/GB) | Storage cost of weights on disk/flash |
 | **\#Activations (Total)** | $\sum_{\text{all layers}} \text{output activation elements}$ | count | Sum across all feature maps |
 | **Peak \#Activations** | $\approx \text{Input Activation} + \text{Output Activation}$ (bottleneck layer) | count | **Often the memory bottleneck** in inference |
-| **Activation Memory** | $\#\text{Activations} \times b$ | bits → bytes | SRAM/GPU memory consumed |
+| **Activation Memory** | $\text{Total Activation} \times b$ | bits → bytes | SRAM/GPU memory consumed |
 | **KV Cache (LLMs)** | $BS \times L \times \text{Heads} \times d_{head} \times N \times 2 \times b$ | bits → bytes | Stores K & V for autoregressive decoding |
 
 ### Key Insight
@@ -174,7 +174,7 @@ $$
 |--------|-----------------|---------|
 | **Peak \#Activations** | Max memory at any single point (HW constraint) | $\max_{\text{layer } l}\left(\text{Input}_l + \text{Output}_l\right)$ |
 | **Total \#Activations** | Sum of all feature maps across all layers | $\sum_{\text{all layers}} \text{Output}_l$ |
-| **Activation Memory** | Byte cost of activations | $\#\text{Activations} \times b / 8$ bytes |
+| **Activation Memory** | Byte cost of activations | $\text{Total Activation} \times b / 8$ bytes |
 
 ### Training Memory Note
 > During **on-device training**, **all** intermediate activations from the forward pass must be stored for backpropagation — making memory $\gg$ inference-only. Sparse backprop can store only ~1/4 of activations.
@@ -297,8 +297,8 @@ $$
 
 | Condition | Regime | Bottleneck |
 |-----------|--------|------------|
-| $\text{Arithmetic Intensity} \gt \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Memory-bound** | Data movement |
-| $\text{Arithmetic Intensity} \lt \dfrac{\text{OPS}_{\text{hw}}}{\text{BW}_{\text{mem}}}$ | **Compute-bound** | Arithmetic |
+| $\text{Arithmetic Intensity} &gt; \frac{\text{OPS/hw}}{\text{BW/mem}}$ | **Memory-bound** | Data movement |
+| $\text{Arithmetic Intensity} &lt; \frac{\text{OPS/hw}}{\text{BW/mem}}$ | **Compute-bound** | Arithmetic |
 
 > Use the **Roofline Model** to visualize where your workload sits.
 
