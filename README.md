@@ -1,3 +1,5 @@
+[![](https://img.shields.io/badge/Contribute-Welcome-green)](./CONTRIBUTING.md) ![GitHub](https://img.shields.io/github/license/afondiel/ai-efficiency-metrics)
+
 # AI Efficiency Metrics Cheatsheet
 
 > Quick-reference guide covering memory, computation, performance, energy, and cost metrics for **AI Systems** — from CNNs and Transformers to TinyML and Diffusion models-based systems.
@@ -203,8 +205,8 @@ $$
 | Metric | Formula / Details |
 |--------|-------------------|
 | **KV Cache (MHA)** | $BS \times L \times \text{Heads} \times d_{head} \times N \times 2 \times b$ |
-| **GQA Cache** | ~$8\times$ smaller than MHA |
-| **MQA Cache** | ~$64\times$ smaller than MHA |
+| **GQA Cache** | ~$8 \times $ smaller than MHA |
+| **MQA Cache** | ~$64 \times $ smaller than MHA |
 | **FLOPs/token** | $\approx 6 \times L \times d^2$ |
 | **Estimated Params** | $\approx V \cdot d + 12 \cdot L \cdot d^2$ |
 | **Effective Context (StreamingLLM)** | Uses "Attention Sinks" to handle context beyond window |
